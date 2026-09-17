@@ -50,6 +50,22 @@ def get_photo(m):
     bot.send_message(m.chat.id, "✅ تم! راح نشحنولك ضرك ⏳")
     user_data.pop(m.chat.id, None)
 
+bot.infinity_polling()
+def step_pay(m):
+    user_data[m.chat.id]['pay'] = m.text
+    txt = f"💳 بريدي موب:\n`{BARIDI}`\n\nخلص وابعت سكرين 📸" if "بريدي" in m.text else f"📱 فليكسي:\n`{FLEXY}`\n\nخلص وابعت سكرين 📸"
+    bot.send_message(m.chat.id, txt, parse_mode="Markdown", reply_markup=types.ReplyKeyboardRemove())
+
+@bot.message_handler(content_types=['photo'])
+def get_photo(m):
+    if m.chat.id not in user_data: return bot.send_message(m.chat.id, "/start")
+    d = user_data[m.chat.id]
+    cap = f"🔥 طلب NAYeL 🔥\n👤 @{m.from_user.username or 'بدون'}\n🆔 {m.chat.id}\n🎮 {d['game_id']}\n💎 {d['offer']}\n💳 {d['pay']}\n⏰ {datetime.now():%Y-%m-%d %H:%M}"
+    bot.forward_message(ADMIN_ID, m.chat.id, m.message_id)
+    bot.send_message(ADMIN_ID, cap)
+    bot.send_message(m.chat.id, "✅ تم! راح نشحنولك ضرك ⏳")
+    user_data.pop(m.chat.id, None)
+
 bot.infinity_polling()    kb.add("💳 بريدي موب", "📱 فليكسي")
     bot.send_message(m.chat.id, "💰 كيفاش تخلص؟", reply_markup=kb)
     bot.register_next_step_handler(m, step_pay)
